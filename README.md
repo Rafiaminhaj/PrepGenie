@@ -86,20 +86,22 @@ Compile and boot the application engine using Maven:
 
 Bash
    mvn spring-boot:run
+
 💡 Developed with passion by Rafia Minhaj — Engineering high-performance architectures for next-generation systems.
 
+📤 How to Add This README on GitHub?
+You can easily add this file directly through your terminal in just 1 minute:
 
----
+Create a new file named README.md inside your project's root directory (PrepGenie>).
 
-### 📤 GitHub Par Is README Ko Kaise Add Karein?
+Copy the full markdown text provided above, paste it into this file, and save it.
 
-Aap directly terminal se bina kisi jhanjhat ke ise 1 minute me add kar sakti hain:
+Open your terminal and run these 3 simple commands line-by-line:
 
-1. Apne project root folder (`PrepGenie>`) me ek nayi file banaiye jiska naam rakhiye **`README.md`**.
-2. Upar diye gaye code ko poora copy karke us file me paste kijiye aur save kar dijiye.
-3. Terminal me bas ye 3 simple commands chala dijiye:
-
-```bash
+Bash
+git add README.md
+git commit -m "docs: added architectural documentation and professional readme"
+git push origin main
 git add README.md
 git commit -m "docs: added architectural documentation and professional readme"
 git push origin main
