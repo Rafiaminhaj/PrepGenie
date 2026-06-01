@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import Navbar from '../components/Navbar';
-import { BookOpen, CheckCircle, XCircle, Clock, Frown, Trophy, ArrowRight, RotateCcw, Home, Sparkles, Award } from 'lucide-react';
+import { BookOpen, CheckCircle, XCircle, Clock, Frown, Trophy, ArrowRight, RotateCcw, Home, Sparkles, Award, SkipForward } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import Confetti from 'react-confetti';
 import { quizQuestions } from '../data/quizQuestions';
@@ -321,7 +321,21 @@ export default function Quiz() {
 
         {/* Explanation & Next Button Container */}
         <div style={{ minHeight: '120px' }}>
-          {showFeedback && (
+          {!showFeedback ? (
+            <div style={{ display: 'flex', justifyContent: 'flex-start', marginTop: '1rem' }}>
+              <button
+                 onClick={() => {
+                   setTimerActive(false);
+                   setStats(prev => ({ ...prev, skipped: prev.skipped + 1 }));
+                   handleNext();
+                 }}
+                 style={{ background: 'rgba(255,255,255,0.05)', padding: '10px 25px', borderRadius: '30px', color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: '8px', border: '1px solid rgba(255,255,255,0.1)', cursor: 'pointer', fontSize: '1rem' }}
+                 className="quiz-option-hover"
+              >
+                <SkipForward size={18} /> Skip Question
+              </button>
+            </div>
+          ) : (
             <div className="animate-fade-in">
               <div style={{ 
                 padding: '1.5rem', 
