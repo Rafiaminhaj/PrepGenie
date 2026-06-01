@@ -36,6 +36,21 @@ The assessment engine mimics a **Real-World Examination** environment with advan
 
 ---
 
+## 🤖 n8n AI Workflow Automation
+
+PrepGenie utilizes an advanced backend orchestration pipeline using **n8n (Node-based Workflow Automation)** to autonomously generate and inject fresh technical content into the application.
+
+### How it Works:
+1. **Trigger Phase:** A cron job or manual trigger initiates the n8n automation workflow.
+2. **AI Generation (Google Gemini):** The workflow securely calls the Google Gemini API with a strict, complex prompt engineered to generate high-quality interview questions (DSA, System Design, ML/DL).
+3. **Data Parsing & Formatting:** n8n parses the unstructured AI response, formats it into a strictly typed JSON array (containing `q`, `a`, `c`, and `exp`), and sanitizes it for front-end consumption.
+4. **Automated Code Injection:** The JSON output is automatically written and appended to `AI_Generated_Questions.json` within the frontend data directory.
+5. **Real-Time Availability:** The React application instantly loads these newly generated questions and blends them with the static question bank, ensuring users never run out of questions and never face "empty array" bugs.
+
+This zero-touch automation ensures the platform is perpetually updated with the latest industry questions without manual intervention.
+
+---
+
 ## 🏗️ System Architecture & Tech Stack
 
 The application is structured as a decoupled, multi-tier system combining highly dynamic user interfaces with a robust, enterprise-grade distributed backend framework.
