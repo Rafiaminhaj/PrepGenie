@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { ArrowLeft, Clock, CheckCircle2, Circle, XCircle, Diamond, Sparkles, Trophy, Award } from 'lucide-react';
+import { ArrowLeft, Clock, CheckCircle2, Circle, XCircle, Diamond, Sparkles, Trophy, Award, SkipForward } from 'lucide-react';
 import CertificateModal from '../components/CertificateModal';
 import confetti from 'canvas-confetti';
 import aiQuestionsData from '../data/AI_Generated_Questions.json';
@@ -120,8 +120,11 @@ export default function PracticeQuiz() {
     }
   };
 
-  const handleNext = () => {
-    const isCorrect = selected === questions[currentQ].ans;
+  const handleNext = (skipped = false) => {
+    let isCorrect = false;
+    if (!skipped && selected !== null) {
+      isCorrect = (selected === questions[currentQ].ans);
+    }
     const finalCorrectCount = isCorrect ? stats.correct + 1 : stats.correct;
     
     if (isCorrect) {
@@ -237,9 +240,15 @@ export default function PracticeQuiz() {
                 ))}
               </div>
 
-              <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <button 
-                  onClick={handleNext}
+                  onClick={() => handleNext(true)}
+                  style={{ background: 'rgba(255,255,255,0.05)', padding: '1rem 2rem', borderRadius: '30px', fontSize: '1rem', color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: '8px', border: '1px solid rgba(255,255,255,0.1)', cursor: 'pointer' }}
+                >
+                  <SkipForward size={18} /> Skip
+                </button>
+                <button 
+                  onClick={() => handleNext(false)}
                   disabled={selected === null}
                   className="btn-primary" 
                   style={{ background: 'linear-gradient(135deg, #eab308 0%, #ca8a04 100%)', opacity: selected === null ? 0.5 : 1, padding: '1rem 3rem', borderRadius: '30px', fontSize: '1.1rem', boxShadow: '0 10px 20px rgba(234, 179, 8, 0.3)' }}
