@@ -1,5 +1,7 @@
 // Auto-generated question bank (240 questions)
-export const quizQuestions = {
+import { mlQuestions } from './mlQuestions';
+
+const baseQuizQuestions = {
   "Java": {
     "Easy": [
       {
@@ -2029,3 +2031,5 @@ export const quizQuestions = {
     ]
   }
 };
+
+export const quizQuestions = { ...baseQuizQuestions, ...mlQuestions };
