@@ -26,6 +26,16 @@ Our core concept is to provide a **sandboxed, risk-free environment** where deve
 
 ---
 
+## 🔄 Real-World Quiz Navigation Workflow
+
+The assessment engine mimics a **Real-World Examination** environment with advanced navigation state memory:
+* **Dynamic State Array:** The system tracks answers continuously using a `userAnswers` array instead of a static counter, preserving exact test states.
+* **Skip & Return Logic:** Users can skip questions, allowing the system to pause the individual timer. They can navigate back via the **"Previous"** button to re-attempt skipped questions seamlessly.
+* **Anti-Cheat Locking:** Once an option is selected, the correct answer and AI-generated explanation are revealed. The question becomes permanently locked in the state array to prevent score manipulation, while still allowing the user to read the explanation later.
+* **On-the-fly Scoring:** The final scorecard is dynamically aggregated at the very end of the session by evaluating the final memory state, rendering precise metrics for Correct, Wrong, and Skipped questions.
+
+---
+
 ## 🏗️ System Architecture & Tech Stack
 
 The application is structured as a decoupled, multi-tier system combining highly dynamic user interfaces with a robust, enterprise-grade distributed backend framework.
