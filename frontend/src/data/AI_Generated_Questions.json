@@ -38,5 +38,245 @@
         "exp": "In JavaScript, when the `+` operator is used with a number and a string, the number is coerced into a string, and then the two strings are concatenated. Therefore, `2` becomes `'2'`, and `'2' + '2'` results in the string `'22'`."
       }
     ]
+  },
+  {
+    "timestamp": "2026-06-01T14:15:52.315Z",
+    "category": "Java",
+    "difficulty": "Hard",
+    "questions": [
+      {
+        "q": "Consider a `Writer` thread that first sets a non-volatile field `data` to a specific value and then sets a `volatile` boolean flag `isReady` to `true`. Concurrently, a `Reader` thread observes `isReady` becoming `true` and then attempts to read `data`. Which of the following statements accurately describes the Java Memory Model (JMM) guarantees regarding the visibility of `data` to the `Reader` thread?",
+        "a": [
+          "The visibility of `data` is not guaranteed, as `volatile` only ensures the visibility of the `isReady` flag itself, not other non-volatile fields modified by the `Writer`.",
+          "Due to the Happens-Before relationship established by the `volatile` write and subsequent `volatile` read, all writes performed by the `Writer` thread *before* setting `isReady` are guaranteed to be visible to the `Reader` thread *after* it reads `isReady` as `true`.",
+          "The `data` field is guaranteed to be visible to the `Reader` thread with its latest value only if `data` itself was also declared `volatile`.",
+          "The `Reader` thread is guaranteed to see the latest value of `data` only if the `Writer` thread performs a `synchronized` block *before* setting `isReady` and the `Reader` thread performs a `synchronized` block *after* reading `isReady`."
+        ],
+        "c": 1,
+        "exp": "A write to a `volatile` variable establishes a Happens-Before relationship with any subsequent read of that same `volatile` variable. This means that all operations that happened *before* the `volatile` write in the writing thread are guaranteed to be visible to any thread that subsequently reads that `volatile` variable. Therefore, when the `Reader` thread observes `isReady` as `true`, it is guaranteed to see the value of `data` as it was set *before* `isReady` was made `true` by the `Writer` thread, even though `data` itself is not `volatile`."
+      },
+      {
+        "q": "Which of the following statements about Java Generics and Type Erasure is INCORRECT?",
+        "a": [
+          "At runtime, all generic type information is removed; generic type parameters are replaced with their bounds (or `Object` if no explicit bound), and casts are inserted where necessary.",
+          "It is generally not possible to create an array of a parameterized type (e.g., `new List<String>[10]`) directly because type safety cannot be guaranteed at runtime due to erasure, potentially leading to `ClassCastException` later.",
+          "Wildcard types like `<? extends T>` allow you to add elements of type `T` or any subtype of `T` to the collection, but not read elements as type `T` without an explicit cast.",
+          "Bridge methods are synthesized by the compiler to maintain polymorphism when a generic method is overridden with specific type arguments, ensuring correct method dispatch after type erasure."
+        ],
+        "c": 2,
+        "exp": "The statement \"Wildcard types like `<? extends T>` allow you to add elements of type `T` or any subtype of `T` to the collection, but not read elements as type `T` without an explicit cast\" is incorrect. According to the PECS (Producer Extends, Consumer Super) principle: `<? extends T>` signifies a 'producer' – you can *read* elements as `T` (or `Object`), but you *cannot add* any elements to the collection (except `null`), because the exact subtype is unknown at compile time. Conversely, `<? super T>` signifies a 'consumer' – you can *add* elements of type `T` or its subtypes, but when reading, elements must be treated as `Object`."
+      },
+      {
+        "q": "Consider the following Java code snippet using `CompletableFuture`:",
+        "a": [
+          "`Step 2` will execute, but `Step 1`'s exception will be caught by `exceptionally`, leading to `Final Result: Processed: Fallback Data`.",
+          "`Step 1` will throw an exception. `exceptionally` will catch it, and `Step 4` will execute on a thread from the `ForkJoinPool.commonPool()`. The `Final Result` will be `Processed: Fallback Data`.",
+          "`Step 1` will throw an exception. `exceptionally` will catch it, and `Step 4` will execute on the thread that calls `future.join()`. The `Final Result` will be `Processed: Fallback Data`.",
+          "The `thenApplyAsync` for `Step 2` will never execute because `Step 1` throws an exception, and the `exceptionally` handler will produce `Final Result: Fallback Data` directly without executing `Step 4`."
+        ],
+        "c": 2,
+        "exp": "Let's trace the execution:\n1.  `supplyAsync` (Step 1) executes on a thread from `ForkJoinPool.commonPool()`, prints its message, and immediately throws a `RuntimeException`. The `CompletableFuture` returned by `supplyAsync` completes exceptionally.\n2.  `thenApplyAsync` (Step 2) will *not* execute because the preceding `CompletableFuture` (from `supplyAsync`) completed exceptionally. Its execution is skipped.\n3.  `exceptionally` (Step 3) catches the `RuntimeException` from `Step 1`. It executes on a thread from the `ForkJoinPool.commonPool()` (as it's handling the completion of an async task). It prints its message and returns \"Fallback Data\", causing the `CompletableFuture` returned by `exceptionally` to complete normally with this value.\n4.  `thenApply` (Step 4) is attached to the future that completed normally with \"Fallback Data\" (the one from `exceptionally`). Since `exceptionally` has already completed *before* `future.join()` is called, `thenApply` (being a non-Async variant) will execute synchronously on the thread that calls `future.join()` – which is the main thread.\n5.  Finally, `future.join()` retrieves the result from `Step 4`, which is \"Processed: Fallback Data\"."
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-01T15:30:05.594Z",
+    "category": "Python",
+    "difficulty": "Easy",
+    "questions": [
+      {
+        "q": "Which of the following is the correct way to declare an integer variable named 'age' with a value of 30 in Python?",
+        "a": [
+          "int age = 30;",
+          "age = 30",
+          "declare age = 30;",
+          "age : int = 30"
+        ],
+        "c": 1,
+        "exp": "In Python, you don't explicitly declare the type of a variable. You simply assign a value to it, and Python dynamically infers the type. So, 'age = 30' is the correct and most Pythonic way."
+      },
+      {
+        "q": "What will be the output of the following Python code snippet?\n\n```python\nprint(5 + 2 * 3)\n```",
+        "a": [
+          "21",
+          "11",
+          "17",
+          "8"
+        ],
+        "c": 1,
+        "exp": "Python follows the standard order of operations (PEMDAS/BODMAS). Multiplication is performed before addition. So, 2 * 3 equals 6, and then 5 + 6 equals 11."
+      },
+      {
+        "q": "Which symbol is used to denote a single-line comment in Python?",
+        "a": [
+          "//",
+          "#",
+          "/* ... */",
+          "--"
+        ],
+        "c": 1,
+        "exp": "In Python, the '#' symbol is used to start a single-line comment. Any text following '#' on the same line is ignored by the interpreter."
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-01T16:30:58.964Z",
+    "category": "Spring Boot",
+    "difficulty": "Hard",
+    "questions": [
+      {
+        "q": "You're working on a Spring Boot application that integrates `acme-logging-starter`. This starter includes `com.acme.logging.AcmeLoggingAutoConfiguration`, which sets up a `LoggerProvider` bean. For your production environment, you need to completely disable `AcmeLoggingAutoConfiguration` and supply your own custom `LoggerProvider` bean, without removing `acme-logging-starter` from the classpath or relying on any `@ConditionalOnMissingBean` logic within `AcmeLoggingAutoConfiguration` itself. Which is the most appropriate and idiomatic way to achieve this for *only* the production environment?",
+        "a": [
+          "Annotate your main application class with `@SpringBootApplication(exclude = {com.acme.logging.AcmeLoggingAutoConfiguration.class})`.",
+          "Add `spring.autoconfigure.exclude=com.acme.logging.AcmeLoggingAutoConfiguration` to your `application-prod.properties` file.",
+          "Create a custom `@Configuration` class with an `@Order(Ordered.HIGHEST_PRECEDENCE)` annotation, declaring your `LoggerProvider` bean.",
+          "Define a bean of type `com.acme.logging.AcmeLoggingAutoConfiguration` in one of your configuration classes to preemptively register it."
+        ],
+        "c": 1,
+        "exp": "Option 2 is the most appropriate and idiomatic way to achieve environment-specific auto-configuration exclusion. By placing `spring.autoconfigure.exclude` in `application-prod.properties`, the auto-configuration is disabled only when the 'prod' profile is active, without altering the main application class code. Option 1 provides a global exclusion, not specific to a profile. Option 3's `@Order` affects the loading order of configuration classes but doesn't prevent an auto-configuration from running if its conditions are met. Option 4 is not a valid mechanism to disable an auto-configuration class."
+      },
+      {
+        "q": "You are developing a custom Spring Boot Starter module. You have an auto-configuration class, `com.mycorp.MyServiceAutoConfiguration`, that needs to be discovered and applied by Spring Boot applications that include your starter. Which of the following is the *modern and recommended* approach for registering your auto-configuration class in a Spring Boot 2.7+ environment?",
+        "a": [
+          "Create a file named `META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports` and list `com.mycorp.MyServiceAutoConfiguration` inside it.",
+          "Add an entry `org.springframework.boot.autoconfigure.EnableAutoConfiguration=com.mycorp.MyServiceAutoConfiguration` to `META-INF/spring.factories`.",
+          "Include `@EnableAutoConfiguration(scanBasePackages = \"com.mycorp\")` in your starter's `pom.xml`.",
+          "Annotate `com.mycorp.MyServiceAutoConfiguration` with `@Component` and ensure it's in a package scanned by `@SpringBootApplication`."
+        ],
+        "c": 0,
+        "exp": "Spring Boot 2.7 introduced `META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports` as the new, preferred mechanism for registering auto-configuration classes. This approach offers better support for AOT (Ahead-of-Time) processing and is more tree-shaking-friendly. While `META-INF/spring.factories` (Option 2) is still supported for backward compatibility, it is considered the legacy method. Options 3 and 4 are incorrect approaches for defining or discovering auto-configurations within a starter."
+      },
+      {
+        "q": "You need to activate a specific `@Configuration` class, `MyFeatureConfiguration`, in a Spring Boot application only if *two distinct conditions* are met:\n1.  A property `app.feature.enabled` is explicitly set to `true`.\n2.  No bean of type `com.example.LegacySystemAdapter` exists in the application context.\n\nWhich combination of annotations, applied to `MyFeatureConfiguration`, precisely and idiomatically expresses these requirements?",
+        "a": [
+          "`@ConditionalOnProperty(name = \"app.feature.enabled\", havingValue = \"true\") @ConditionalOnMissingBean(com.example.LegacySystemAdapter.class)`",
+          "`@ConditionalOnProperty(name = \"app.feature.enabled\", matchIfMissing = false) @ConditionalOnBean(com.example.LegacySystemAdapter.class)`",
+          "`@ConditionalOnExpression(\"${app.feature.enabled:false} and !@environment.containsProperty('com.example.LegacySystemAdapter')\")`",
+          "`@ConditionalOnMissingBean(com.example.LegacySystemAdapter.class) @ConditionalOnProperty(name = \"app.feature.enabled\", havingValue = \"true\", relaxedNames = true)`"
+        ],
+        "c": 0,
+        "exp": "Multiple `@Conditional` annotations on a class are implicitly logically ANDed. Option 1 correctly uses `@ConditionalOnProperty(name = \"app.feature.enabled\", havingValue = \"true\")` to ensure the property is present and its value is 'true', and `@ConditionalOnMissingBean(com.example.LegacySystemAdapter.class)` to verify the absence of the specified bean. Option 2 is incorrect because `matchIfMissing = false` alone doesn't ensure the property's value is 'true', and it incorrectly uses `@ConditionalOnBean`. Option 3 is incorrect because `!@environment.containsProperty('...')` checks for a *property* with that name, not the presence of a *bean* of that type. Option 4 includes `relaxedNames = true`, which is deprecated in modern Spring Boot, making it less idiomatic, although the core conditions are present."
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-01T17:30:12.563Z",
+    "category": "Spring Boot",
+    "difficulty": "Medium",
+    "questions": [
+      {
+        "q": "In a standard Spring Boot application, which annotation combines `@Configuration`, `@EnableAutoConfiguration`, and `@ComponentScan` to simplify application setup?",
+        "a": [
+          "@SpringBootApplication",
+          "@EnableSpringApplication",
+          "@AutoConfigureApplication",
+          "@ComponentScan"
+        ],
+        "c": 0,
+        "exp": "`@SpringBootApplication` is a convenient composite annotation that includes `@Configuration` (marks the class as a source of bean definitions), `@EnableAutoConfiguration` (enables Spring Boot's auto-configuration mechanism), and `@ComponentScan` (enables component scanning for the package the application class resides in and its sub-packages). This simplifies the setup of a typical Spring Boot application."
+      },
+      {
+        "q": "To activate a Spring Boot profile named \"dev\" when starting an application from the command line, which of the following arguments is correct?",
+        "a": [
+          "--spring.profiles.active=dev",
+          "-Dspring.profiles.name=dev",
+          "--profile=dev",
+          "--active-profile=dev"
+        ],
+        "c": 0,
+        "exp": "The correct command-line argument to activate Spring Boot profiles is `--spring.profiles.active=<profile_name>`. This argument is recognized by Spring Boot's `Environment` abstraction and overrides any `spring.profiles.active` setting found in `application.properties` or `application.yml` files."
+      },
+      {
+        "q": "If `spring-boot-starter-data-jpa` is included in a Spring Boot project, and no explicit datasource configuration (e.g., URL, driver, username, password) is provided in `application.properties` or `application.yml`, which of the following embedded databases will Spring Boot typically configure by default if it's available on the classpath?",
+        "a": [
+          "H2",
+          "HSQLDB",
+          "Derby",
+          "SQLite"
+        ],
+        "c": 0,
+        "exp": "When `spring-boot-starter-data-jpa` is used without explicit datasource configuration, Spring Boot attempts to configure an embedded database if one is found on the classpath. The preference order for embedded databases is H2, then HSQLDB, then Apache Derby. If H2 is present (which is very common in Spring Boot projects), it will be automatically configured as the default in-memory database."
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-01T18:30:17.316Z",
+    "category": "Python",
+    "difficulty": "Medium",
+    "questions": [
+      {
+        "q": "What will be the output of the following Python code?\n```python\ndef add_item(item, items=[]):\n    items.append(item)\n    return items\n\nprint(add_item(1))\nprint(add_item(2))\nprint(add_item(3, []))\nprint(add_item(4))\n```",
+        "a": [
+          "[1]\n[2]\n[3]\n[4]",
+          "[1]\n[1, 2]\n[3]\n[1, 2, 4]",
+          "[1]\n[1, 2]\n[3]\n[1, 2, 3, 4]",
+          "[1]\n[2, 1]\n[3]\n[4, 2, 1]"
+        ],
+        "c": 1,
+        "exp": "This question tests the understanding of mutable default arguments in Python. Default arguments are evaluated only once, when the function is defined. So, `items=[]` creates a list object that is reused across multiple calls to `add_item` unless an explicit list is passed.\n\n1.  `print(add_item(1))`: `items` is the default `[]`. After appending 1, it becomes `[1]`. Output: `[1]`.\n2.  `print(add_item(2))`: `items` is still the *same* default list, which is now `[1]`. After appending 2, it becomes `[1, 2]`. Output: `[1, 2]`.\n3.  `print(add_item(3, []))`: A *new* empty list is explicitly passed for `items`. After appending 3, it becomes `[3]`. Output: `[3]`.\n4.  `print(add_item(4))`: Again, no list is passed, so the *original* default list (which is `[1, 2]` from step 2) is used. After appending 4, it becomes `[1, 2, 4]`. Output: `[1, 2, 4]`."
+      },
+      {
+        "q": "Consider the following Python code:\n```python\ndef count_up_to(n):\n    i = 1\n    while i <= n:\n        yield i\n        i += 1\n\ngen = count_up_to(3)\nprint(list(gen))\nprint(list(gen))\n```\nWhat will be the output?",
+        "a": [
+          "[1, 2, 3]\n[1, 2, 3]",
+          "[1, 2, 3]\n[]",
+          "[1, 2, 3]\nError",
+          "1\n2\n3\n"
+        ],
+        "c": 1,
+        "exp": "This question tests the understanding of Python generators and their single-pass nature. A generator function, when called, returns a generator iterator object. This iterator maintains its state between calls to `next()` (or when iterated over).\n\n1.  `gen = count_up_to(3)`: This creates a generator object, but the code inside `count_up_to` does not execute yet.\n2.  `print(list(gen))`: This consumes the generator entirely. The `list()` constructor iterates through all items yielded by `gen` until it's exhausted. The generator yields 1, then 2, then 3. Output: `[1, 2, 3]`.\n3.  `print(list(gen))`: Since the `gen` generator object was already exhausted in the previous step, it has no more values to yield. Iterating over an exhausted generator results in an empty sequence. Output: `[]`."
+      },
+      {
+        "q": "What will be the output of the following Python code?\n```python\ndef my_decorator(func):\n    def wrapper(*args, **kwargs):\n        print(\"Something is happening before the function is called.\")\n        result = func(*args, **kwargs)\n        print(\"Something is happening after the function is called.\")\n        return result\n    return wrapper\n\n@my_decorator\ndef say_hello(name):\n    print(f\"Hello, {name}!\")\n    return f\"Greeting for {name}\"\n\nprint(say_hello(\"Alice\"))\n```",
+        "a": [
+          "Something is happening before the function is called.\nHello, Alice!\nSomething is happening after the function is called.\nGreeting for Alice",
+          "Hello, Alice!\nGreeting for Alice",
+          "Something is happening before the function is called.\nHello, Alice!\nSomething is happening after the function is called.",
+          "Hello, Alice!\nSomething is happening before the function is called.\nSomething is happening after the function is called.\nGreeting for Alice"
+        ],
+        "c": 0,
+        "exp": "This question tests the understanding of Python decorators. The `@my_decorator` syntax is syntactic sugar for `say_hello = my_decorator(say_hello)`.\n\nWhen `say_hello(\"Alice\")` is called:\n1.  The `wrapper` function returned by `my_decorator` is executed.\n2.  Inside `wrapper`, `print(\"Something is happening before...\")` is executed first.\n3.  Then, `func(*args, **kwargs)` is called, which refers to the original `say_hello` function. This causes `print(f\"Hello, Alice!\")` to execute, and `say_hello` returns the string `\"Greeting for Alice\"`.\n4.  The return value of `say_hello` is stored in `result`.\n5.  `print(\"Something is happening after...\")` is executed.\n6.  Finally, `wrapper` returns `result` (which is `\"Greeting for Alice\"`).\n7.  The outer `print()` statement then prints the return value of the decorated `say_hello` call.\n\nTherefore, the output sequence is: 'Something is happening before...', 'Hello, Alice!', 'Something is happening after...', and finally, 'Greeting for Alice' from the `print()` of the decorated function's return value."
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-01T19:30:24.976Z",
+    "category": "Spring Boot",
+    "difficulty": "Hard",
+    "questions": [
+      {
+        "q": "You are developing a Spring Boot microservice that exposes a custom Actuator endpoint `/actuator/healthDetails` containing sensitive health information. You need to ensure this endpoint is only accessible to users with the `ACTUATOR_ADMIN` role and is exposed via HTTP. Which approach provides the most robust and idiomatic security for this specific custom Actuator endpoint, assuming Spring Security is enabled?",
+        "a": [
+          "Implement a `@RestController` at `/actuator/healthDetails` annotated with `@PreAuthorize(\"hasRole('ACTUATOR_ADMIN')\")` and include `healthDetails` in `management.endpoints.web.exposure.include`.",
+          "Implement an `@Endpoint` with `@ReadOperation` at `/healthDetails` (Spring will map it to `/actuator/healthDetails`), configure `management.endpoints.web.exposure.include: healthDetails`, and define a `SecurityFilterChain` bean (or `WebSecurityConfigurerAdapter`) to protect `/actuator/healthDetails` with `http.authorizeHttpRequests().requestMatchers(\"/actuator/healthDetails\").hasRole(\"ACTUATOR_ADMIN\")`.",
+          "Implement an `@Endpoint` with `@ReadOperation` at `/healthDetails` annotated with `@PreAuthorize(\"hasRole('ACTUATOR_ADMIN')\")` and configure `management.endpoints.web.exposure.include: healthDetails`.",
+          "Implement an `@Endpoint` with `@ReadOperation` at `/healthDetails`, configure `management.endpoints.web.exposure.include: healthDetails` and `management.endpoint.healthDetails.show-details: ALWAYS`, then use `management.endpoint.healthDetails.roles: ACTUATOR_ADMIN`."
+        ],
+        "c": 1,
+        "exp": "Option 1 is incorrect because `@RestController` does not define an Actuator endpoint, and `management.endpoints.web.exposure.include` only applies to `@Endpoint`-annotated beans. Option 3, while `@PreAuthorize` can work on an `@Endpoint` method, it applies security at the method invocation level. The most robust and idiomatic way to secure Actuator endpoints, especially for path-level access control, is by configuring `HttpSecurity` rules in Spring Security. This intercepts the request before any Actuator logic is executed, providing a clearer separation of concerns for endpoint exposure and access control. Option 4 uses non-existent or misapplied Actuator properties; `management.endpoint.*.roles` is not a standard property for securing endpoints, and `show-details` controls the level of detail displayed, not access itself. Therefore, Option 2 correctly uses `@Endpoint` for definition, `management.endpoints.web.exposure.include` for HTTP exposure, and `SecurityFilterChain` for path-based role-specific access control, which is the preferred approach."
+      },
+      {
+        "q": "A Spring Boot application uses `spring-boot-starter-data-jpa` and `spring-boot-starter-web`. The default auto-configuration provides a `DataSource` and a `JpaTransactionManager`. You need to replace the default `JpaTransactionManager` with a custom implementation (`MyCustomTransactionManager`) while still utilizing the auto-configured `DataSource` and avoiding the complete disablement of `JpaTransactionManagerAutoConfiguration`. What is the most effective and idiomatic way to achieve this?",
+        "a": [
+          "Define a `@Bean` of type `MyCustomTransactionManager` annotated with `@Primary` in any `@Configuration` class.",
+          "Define a `@Bean` of type `MyCustomTransactionManager` in an `@Configuration` class, ensuring the class is loaded *before* `JpaTransactionManagerAutoConfiguration` by using `@AutoConfigureBefore(JpaTransactionManagerAutoConfiguration.class)`.",
+          "Define a `@Bean` of type `MyCustomTransactionManager` in any `@Configuration` class. Spring Boot's auto-configuration for `JpaTransactionManager` typically uses `@ConditionalOnMissingBean`, which will then detect your custom bean.",
+          "Disable `JpaTransactionManagerAutoConfiguration` using `@EnableAutoConfiguration(exclude = JpaTransactionManagerAutoConfiguration.class)` and then define a `@Bean` of type `MyCustomTransactionManager`."
+        ],
+        "c": 2,
+        "exp": "Spring Boot's auto-configuration mechanisms are designed for easy overriding. Many auto-configured beans, including the `JpaTransactionManager`, are conditional on the absence of a bean of that type (or a more general type like `PlatformTransactionManager`). Therefore, simply defining your own `MyCustomTransactionManager` as a `@Bean` in your application's configuration will satisfy the `@ConditionalOnMissingBean` condition of the auto-configuration, preventing the default `JpaTransactionManager` from being created. This is the most idiomatic way to customize auto-configured components. Option 1 (`@Primary`) is used to resolve ambiguity when multiple beans of the same type exist, but it doesn't prevent the auto-configuration from creating its bean in the first place. Option 2 (`@AutoConfigureBefore`) influences the order of auto-configuration classes, but the core mechanism for overriding is the `@ConditionalOnMissingBean` check. Option 4 (`@EnableAutoConfiguration(exclude = ...)`) works but is less idiomatic as it completely disables the auto-configuration, which might prevent other useful features from being configured, and the question asks to avoid complete disablement if possible."
+      },
+      {
+        "q": "In a Spring Boot application, you have a service method annotated with `@Transactional` that performs several database operations. After these operations, you need to publish a custom event (`OrderPlacedEvent`) that triggers an external system integration. This integration should *only* proceed if the transaction commits successfully. If the transaction rolls back, the integration should not be attempted. Which is the most appropriate and robust way to achieve this?",
+        "a": [
+          "Publish the `OrderPlacedEvent` directly within the `@Transactional` method using `ApplicationEventPublisher.publishEvent()`.",
+          "Publish the `OrderPlacedEvent` directly within the `@Transactional` method, but ensure the event listener is annotated with `@Async` to defer processing.",
+          "Publish the `OrderPlacedEvent` from a method annotated with `@EventListener` and configured with `phase = TransactionPhase.AFTER_COMMIT`.",
+          "Publish the `OrderPlacedEvent` within the `@Transactional` method using `ApplicationEventPublisher`, and ensure the event listener method is annotated with `@Transactional(propagation = Propagation.REQUIRES_NEW)`."
+        ],
+        "c": 2,
+        "exp": "The requirement that the event should *only* be processed upon successful transaction commit is precisely what Spring's `@TransactionalEventListener` (or `@EventListener` with a specific `TransactionPhase`) is designed for. When an event is published from within a transactional context, and its listener is configured with `TransactionPhase.AFTER_COMMIT`, the event is only dispatched to the listener if and when the enclosing transaction successfully commits. If the transaction rolls back for any reason, the event is never dispatched. Option 1 is incorrect because if the transaction rolls back after the event is published, the event would still be processed, leading to inconsistencies. Option 2 (using `@Async`) makes the event processing asynchronous but doesn't tie its execution to the original transaction's commit status; the event would still be published immediately. Option 4 ensures the listener runs in its own transaction but does not prevent the event from being published if the original transaction ultimately rolls back, thus not meeting the core requirement."
+      }
+    ]
   }
 ]

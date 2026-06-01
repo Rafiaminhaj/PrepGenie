@@ -1,0 +1,94 @@
+{
+  "name": "PrepGenie AI Quiz Generator",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours",
+              "interval": 1
+            }
+          ]
+        }
+      },
+      "id": "e6047be0-7603-4f9e-bd42-f04bf44f9c6d",
+      "name": "Schedule Trigger",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [ 200, 300 ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=AIzaSyDN_XeXLAhm_WddKA-bfYNeJJe2G-OLex0",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ { \"contents\": [ { \"parts\": [ { \"text\": \"You are an expert technical interviewer. Generate exactly 3 multiple-choice questions for System Design at a Hard difficulty level. Return the response STRICTLY as a raw JSON array matching this format: [{ 'q': 'Question', 'a': ['Opt1', 'Opt2', 'Opt3', 'Opt4'], 'c': 0, 'exp': 'Explanation' }]\" } ] } ] } }}",
+        "options": {}
+      },
+      "id": "d04132ad-a8f6-4ef3-b4d2-f470a1a0ed02",
+      "name": "HTTP Request to Gemini AI",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [ 460, 300 ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const response = items[0].json.candidates[0].content.parts[0].text;\nlet cleanText = response.replace(/^```json\\s*/, '').replace(/\\s*```$/, '');\nconst questions = JSON.parse(cleanText);\n\nreturn {\n  category: \"System Design\",\n  difficulty: \"Hard\",\n  timestamp: new Date().toISOString(),\n  questions: questions\n};"
+      },
+      "id": "code_parse_gemini",
+      "name": "Parse AI Output",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [ 700, 300 ]
+    },
+    {
+      "parameters": {
+        "command": "=node c:/Users/adiqu/OneDrive/Desktop/PrepGenie/frontend/scripts/appendData.js '{{JSON.stringify($json)}}'"
+      },
+      "id": "execute_node_script",
+      "name": "Save to App Database",
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [ 940, 300 ]
+    }
+  ],
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request to Gemini AI",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request to Gemini AI": {
+      "main": [
+        [
+          {
+            "node": "Parse AI Output",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse AI Output": {
+      "main": [
+        [
+          {
+            "node": "Save to App Database",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {}
+}

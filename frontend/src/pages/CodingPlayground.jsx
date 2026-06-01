@@ -281,7 +281,7 @@ export default function CodingPlayground() {
     } else {
       // Backend Execution
       try {
-        const response = await fetch('http://localhost:8080/api/execute', {
+        const response = await fetch((import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api') + '/execute', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ language: language, code: code })
@@ -404,7 +404,7 @@ export default function CodingPlayground() {
       javaCode += '  }\n}';
 
       try {
-        const response = await fetch('http://localhost:8080/api/execute', {
+        const response = await fetch((import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api') + '/execute', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ language: 'java', code: javaCode })

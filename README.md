@@ -2,6 +2,8 @@
 
 PrepGenie is a premium, comprehensive full-stack platform engineered to revolutionize how developers prepare for technical interviews, system design challenges, and core engineering assessments. It bridges the gap between conceptual knowledge and production-ready system engineering.
 
+> *"PrepGenie isn't just a platform; it's a self-evolving AI mentor designed to bridge the gap between theoretical learning and industry-level execution."*
+
 ---
 
 ## 🎯 Core Concepts & Vision
@@ -15,7 +17,8 @@ Our core concept is to provide a **sandboxed, risk-free environment** where deve
 ## ⚡ Key Features & Capabilities
 
 * **🤖 Autonomous AI Agents:** Powered by LangChain, our AI Tutor Agent actively reads your code in real-time, providing conversational hints and guidance without simply giving away the answer.
-* **🔄 Automated Content Generation:** A built-in cron-scheduled AI Agent automatically generates fresh, high-quality technical quizzes daily, ensuring you never run out of practice material.
+* **⚙️ Enterprise AI Pipeline:** Designed and deployed a fully automated workflow using **n8n Orchestrator** and **Google Gemini API** to autonomously generate, parse, and inject complex interview questions (Hard System Design, Java) directly into the application's database.
+* **🧠 Advanced ML & DL Curriculum:** Upgraded the assessment engine to include dynamic evaluations on modern industry trends, specifically **Machine Learning Basics, Deep Learning (CNNs, RNNs), and Generative AI (RAG, LLMs)**.
 * **🗣️ AI Mock Interview Panels:** Dynamic voice-and-text integrated AI panels that mimic real-world technical and HR loops, providing detailed evaluations on grammar, fluency, and technical accuracy.
 * **📊 System Design Grids & Sandboxes:** Interactive visual frameworks that aid in mapping distributed state engines, database schemas, and microservice topologies.
 * **💡 Smart Analytics Dashboard:** Comprehensive tracking systems providing real-time code-review feedbacks, streak calendars, and developer persona insights.
@@ -30,6 +33,7 @@ The application is structured as a decoupled, multi-tier system combining highly
 ### 💻 Frontend (Client Tier)
 * **Framework:** React.js with Vite (Engineered for micro-frontend speeds).
 * **AI & Agents:** `@langchain/google-genai` and `@google/generative-ai` for autonomous workflows.
+* **Automation:** Local integration with **n8n Workflow Automation** for data pipeline orchestration.
 * **Styling & Motion:** Tailwind CSS coupled with Framer Motion for high-end fluid animations.
 * **State Management:** Local state management seamlessly integrated with browser storage for persistence.
 

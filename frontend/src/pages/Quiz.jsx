@@ -4,6 +4,7 @@ import { BookOpen, CheckCircle, XCircle, Clock, Frown, Trophy, ArrowRight, Rotat
 import { supabase } from '../lib/supabase';
 import Confetti from 'react-confetti';
 import { quizQuestions } from '../data/quizQuestions';
+import aiQuestionsData from '../data/AI_Generated_Questions.json';
 import CertificateModal from '../components/CertificateModal';
 
 export default function Quiz() {
@@ -42,16 +43,42 @@ export default function Quiz() {
 
   const handleStart = () => {
     let selectedQs = [];
+    let baseBank = [];
+    
     if (difficulty === 'Mixed') {
-      const easyQs = quizQuestions[topic]['Easy'] || [];
-      const medQs = quizQuestions[topic]['Medium'] || [];
-      const hardQs = quizQuestions[topic]['Hard'] || [];
-      const combined = [...easyQs, ...medQs, ...hardQs];
-      selectedQs = combined.sort(() => 0.5 - Math.random()).slice(0, 10);
+      const easyQs = quizQuestions[topic]?.['Easy'] || [];
+      const medQs = quizQuestions[topic]?.['Medium'] || [];
+      const hardQs = quizQuestions[topic]?.['Hard'] || [];
+      baseBank = [...easyQs, ...medQs, ...hardQs];
     } else {
-      const qBank = quizQuestions[topic][difficulty] || [];
-      selectedQs = [...qBank].sort(() => 0.5 - Math.random()).slice(0, 10);
+      baseBank = quizQuestions[topic]?.[difficulty] || [];
     }
+
+    // Extract relevant AI questions
+    let aiBank = [];
+    aiQuestionsData.forEach(batch => {
+      if (batch.category === topic && (difficulty === 'Mixed' || batch.difficulty === difficulty)) {
+        if (batch.questions) {
+          batch.questions.forEach(aiQ => {
+            aiBank.push({
+              q: `[AI] ${aiQ.q}`,
+              a: aiQ.a,
+              c: aiQ.c,
+              exp: aiQ.exp
+            });
+          });
+        }
+      }
+    });
+
+    // Shuffle both banks
+    const shuffledAI = [...aiBank].sort(() => 0.5 - Math.random());
+    const shuffledNormal = [...baseBank].sort(() => 0.5 - Math.random());
+    
+    // Always put AI questions at the top
+    const combined = [...shuffledAI, ...shuffledNormal];
+    selectedQs = combined.slice(0, 10);
+
     
     setQuestions(selectedQs);
     setQuizStarted(true);
@@ -113,7 +140,7 @@ export default function Quiz() {
   };
 
   const renderSelection = () => {
-    const topics = ['Java', 'Spring Boot', 'JavaScript', 'System Design', 'DSA', 'Python'];
+    const topics = ['Java', 'Spring Boot', 'JavaScript', 'System Design', 'DSA', 'Python', 'Machine Learning Basics', 'Deep Learning & Neural Networks', 'Generative AI & LLMs', 'Data Processing'];
     const difficulties = ['Easy', 'Medium', 'Hard', 'Mixed'];
 
     return (

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { ArrowLeft, Clock, CheckCircle2, Circle, XCircle, Diamond, Sparkles, Trophy, Award } from 'lucide-react';
 import CertificateModal from '../components/CertificateModal';
 import confetti from 'canvas-confetti';
+import aiQuestionsData from '../data/AI_Generated_Questions.json';
 
 const MASTER_POOL = [
   { id: 1, q: "Which of the following is true about Java's garbage collection?", options: ["It guarantees that out-of-memory errors will never occur", "It runs on a separate daemon thread", "It can be forced to run by calling System.gc()", "It reclaims memory of unreachable objects immediately"], ans: 1 },
@@ -26,6 +27,21 @@ const MASTER_POOL = [
   { id: 20, q: "In OOP, what concept allows a child class to provide a specific implementation of a method?", options: ["Overloading", "Encapsulation", "Overriding", "Abstraction"], ans: 2 }
 ];
 
+// Generate dynamic pool once to prevent hot-reload duplicates
+const aiQuestions = [];
+aiQuestionsData.forEach((batch, bIdx) => {
+  if (batch.questions) {
+    batch.questions.forEach((aiQ, qIdx) => {
+      aiQuestions.push({
+        id: `ai_${bIdx}_${qIdx}`,
+        q: `[AI] ${aiQ.q}`,
+        options: aiQ.a,
+        ans: aiQ.c
+      });
+    });
+  }
+});
+
 export default function PracticeQuiz() {
   const [questions, setQuestions] = useState([]);
   const [currentQ, setCurrentQ] = useState(0);
@@ -48,9 +64,14 @@ export default function PracticeQuiz() {
       attemptedIds = [];
     }
     
-    // Shuffle and pick 10
-    const shuffled = available.sort(() => 0.5 - Math.random());
-    const selectedQs = shuffled.slice(0, 10);
+    // Shuffle normal questions
+    const shuffledNormal = available.sort(() => 0.5 - Math.random());
+    
+    // Always include some AI questions at the top
+    const shuffledAI = [...aiQuestions].sort(() => 0.5 - Math.random());
+    const combined = [...shuffledAI, ...shuffledNormal];
+    
+    const selectedQs = combined.slice(0, 10);
     setQuestions(selectedQs);
     
     // Save new attempts

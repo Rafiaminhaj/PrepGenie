@@ -18,7 +18,7 @@ if (!apiKey) {
 const genAI = new GoogleGenerativeAI(apiKey);
 const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
-const categories = ['Java', 'Spring Boot', 'JavaScript', 'System Design', 'DSA', 'Python'];
+const categories = ['Java', 'Spring Boot', 'JavaScript', 'System Design', 'DSA', 'Python', 'Machine Learning Basics', 'Deep Learning & Neural Networks', 'Generative AI & LLMs', 'Data Processing'];
 const difficulties = ['Easy', 'Medium', 'Hard'];
 
 const DATA_FILE_PATH = path.resolve(__dirname, '../src/data/quizQuestions.js');
