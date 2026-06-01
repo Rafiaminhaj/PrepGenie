@@ -18,6 +18,21 @@ export default function Quiz() {
   const [quizStarted, setQuizStarted] = useState(false);
   const [timerActive, setTimerActive] = useState(false);
   const [showCert, setShowCert] = useState(false);
+  
+  // Gamification states
+  const [showMiniConfetti, setShowMiniConfetti] = useState(false);
+  const [currentStreak, setCurrentStreak] = useState(0);
+
+  // Magic Sound effect
+  const playMagicSound = () => {
+    try {
+      const audio = new Audio('https://actions.google.com/sounds/v1/cartoon/magic_chime_chord.ogg');
+      audio.volume = 0.5;
+      audio.play();
+    } catch (e) {
+      console.error("Audio play failed", e);
+    }
+  };
 
   // Timer logic
   useEffect(() => {
@@ -68,12 +83,15 @@ export default function Quiz() {
       }
     });
 
-    // Shuffle both banks
-    const shuffledAI = [...aiBank].sort(() => 0.5 - Math.random());
-    const shuffledNormal = [...baseBank].sort(() => 0.5 - Math.random());
+    // Always put AI questions at the top? No, let's mix them perfectly
+    const combined = [...aiBank, ...baseBank];
     
-    // Always put AI questions at the top
-    const combined = [...shuffledAI, ...shuffledNormal];
+    // Fisher-Yates Shuffle for perfectly random distribution
+    for (let i = combined.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [combined[i], combined[j]] = [combined[j], combined[i]];
+    }
+    
     selectedQs = combined.slice(0, 10);
 
     if (selectedQs.length === 0) {
@@ -91,14 +109,27 @@ export default function Quiz() {
   };
 
   const handleSelect = (idx) => {
-    if (userAnswers[currentQIndex] !== null || (!timerActive && timeLeft === 0)) return; // Prevent changing answer or answering after time's up
+    if (userAnswers[currentQIndex] !== null || (!timerActive && timeLeft === 0)) return; 
     
+    const isCorrect = idx === questions[currentQIndex].c;
+    
+    if (isCorrect) {
+      const newStreak = currentStreak + 1;
+      setCurrentStreak(newStreak);
+      if (newStreak === 5) {
+        setShowMiniConfetti(true);
+        setTimeout(() => setShowMiniConfetti(false), 4000); // Stop after 4 seconds
+      }
+    } else {
+      setCurrentStreak(0); // reset streak
+    }
+
     setUserAnswers(prev => {
       const newAnswers = [...prev];
       newAnswers[currentQIndex] = idx;
       return newAnswers;
     });
-    setTimerActive(false); // Stop timer
+    setTimerActive(false); 
   };
 
   const handleFinish = async () => {
@@ -125,6 +156,11 @@ export default function Quiz() {
         logSession(finalScore * 5); // 5 gems per correct answer
       });
       setQuizFinished(true);
+
+      if (finalScore === 10) {
+        setShowCert(true);
+        playMagicSound();
+      }
   };
 
   const handleNext = () => {
@@ -226,6 +262,13 @@ export default function Quiz() {
     return (
       <div className="glass-panel animate-fade-in" style={{ padding: '3rem', maxWidth: '800px', margin: '0 auto', position: 'relative' }}>
         
+        {/* 5-Question Burst Mini Confetti */}
+        {showMiniConfetti && (
+          <div style={{ position: 'absolute', top: 0, left: '50%', transform: 'translateX(-50%)', zIndex: 50, pointerEvents: 'none' }}>
+            <Confetti width={600} height={400} recycle={false} numberOfPieces={200} gravity={0.3} initialVelocityY={15} />
+          </div>
+        )}
+
         {/* Header Stats */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', color: 'var(--text-muted)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -394,9 +437,14 @@ export default function Quiz() {
 
     return (
       <>
-        {isHighScore && (
+        {finalScore === 10 && (
           <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', zIndex: 9999, pointerEvents: 'none' }}>
-            <Confetti width={windowDimension.width} height={windowDimension.height} recycle={false} numberOfPieces={500} />
+            <Confetti width={windowDimension.width} height={windowDimension.height} recycle={true} numberOfPieces={400} gravity={0.15} />
+          </div>
+        )}
+        {isHighScore && finalScore < 10 && (
+          <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', zIndex: 9999, pointerEvents: 'none' }}>
+            <Confetti width={windowDimension.width} height={windowDimension.height} recycle={false} numberOfPieces={300} />
           </div>
         )}
         <div className="glass-panel animate-fade-in" style={{ padding: '3rem', textAlign: 'center', maxWidth: '600px', margin: '0 auto', position: 'relative' }}>
@@ -446,9 +494,9 @@ export default function Quiz() {
           </div>
 
           <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
-            {isHighScore && (
+            {isHighScore && finalScore < 10 && (
               <button 
-                onClick={() => setShowCert(true)} 
+                onClick={() => { setShowCert(true); playMagicSound(); }} 
                 style={{ flex: 1, minWidth: '150px', padding: '15px', background: 'linear-gradient(135deg, #8b5cf6, #6d28d9)', border: 'none', borderRadius: '8px', color: '#fff', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '10px', cursor: 'pointer', transition: 'all 0.3s ease', boxShadow: '0 10px 25px rgba(139, 92, 246, 0.4)' }}
                 className="hover-glow"
               >
@@ -456,7 +504,7 @@ export default function Quiz() {
               </button>
             )}
             <button 
-              onClick={() => { setQuizStarted(false); setQuizFinished(false); setShowCert(false); }} 
+              onClick={() => { setQuizStarted(false); setQuizFinished(false); setShowCert(false); setCurrentStreak(0); }} 
               style={{ flex: 1, minWidth: '150px', padding: '15px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', color: '#fff', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '10px', cursor: 'pointer', transition: 'all 0.3s ease' }}
               className="hover-glow"
             >
