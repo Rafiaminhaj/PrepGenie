@@ -79,6 +79,10 @@ export default function Quiz() {
     const combined = [...shuffledAI, ...shuffledNormal];
     selectedQs = combined.slice(0, 10);
 
+    if (selectedQs.length === 0) {
+      alert(`Oops! We don't have enough '${difficulty}' questions for '${topic}' right now. Our AI Agent is generating them in the background. Please try a different difficulty or topic!`);
+      return;
+    }
     
     setQuestions(selectedQs);
     setQuizStarted(true);
