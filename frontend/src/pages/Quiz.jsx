@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import Navbar from '../components/Navbar';
-import { BookOpen, CheckCircle, XCircle, Clock, Frown, Trophy, ArrowRight, RotateCcw, Home, Sparkles, Award, SkipForward } from 'lucide-react';
+import { BookOpen, CheckCircle, XCircle, Clock, Frown, Trophy, ArrowRight, RotateCcw, Home, Sparkles, Award, SkipForward, ArrowLeft } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import Confetti from 'react-confetti';
 import { quizQuestions } from '../data/quizQuestions';
@@ -12,12 +12,10 @@ export default function Quiz() {
   const [difficulty, setDifficulty] = useState(null);
   const [questions, setQuestions] = useState([]);
   const [currentQIndex, setCurrentQIndex] = useState(0);
-  const [selectedOption, setSelectedOption] = useState(null);
-  const [score, setScore] = useState(0);
+  const [userAnswers, setUserAnswers] = useState([]);
   const [timeLeft, setTimeLeft] = useState(30);
   const [quizFinished, setQuizFinished] = useState(false);
   const [quizStarted, setQuizStarted] = useState(false);
-  const [stats, setStats] = useState({ correct: 0, wrong: 0, skipped: 0 });
   const [timerActive, setTimerActive] = useState(false);
   const [showCert, setShowCert] = useState(false);
 
@@ -28,7 +26,6 @@ export default function Quiz() {
       interval = setInterval(() => setTimeLeft(prev => prev - 1), 1000);
     } else if (timeLeft === 0 && timerActive) {
       setTimerActive(false);
-      setStats(prev => ({ ...prev, skipped: prev.skipped + 1 }));
     }
     return () => clearInterval(interval);
   }, [timerActive, timeLeft]);
@@ -87,37 +84,25 @@ export default function Quiz() {
     setQuestions(selectedQs);
     setQuizStarted(true);
     setCurrentQIndex(0);
-    setScore(0);
-    setStats({ correct: 0, wrong: 0, skipped: 0 });
-    setSelectedOption(null);
+    setUserAnswers(new Array(selectedQs.length).fill(null));
     setTimeLeft(30);
     setTimerActive(true);
     setQuizFinished(false);
   };
 
   const handleSelect = (idx) => {
-    if (selectedOption !== null || !timerActive) return; // Prevent changing answer or answering after time's up
+    if (userAnswers[currentQIndex] !== null || (!timerActive && timeLeft === 0)) return; // Prevent changing answer or answering after time's up
     
-    setSelectedOption(idx);
+    setUserAnswers(prev => {
+      const newAnswers = [...prev];
+      newAnswers[currentQIndex] = idx;
+      return newAnswers;
+    });
     setTimerActive(false); // Stop timer
-
-    const isCorrect = idx === questions[currentQIndex].c;
-    if (isCorrect) {
-      setScore(prev => prev + 1);
-      setStats(prev => ({ ...prev, correct: prev.correct + 1 }));
-    } else {
-      setStats(prev => ({ ...prev, wrong: prev.wrong + 1 }));
-    }
   };
 
-  const handleNext = async () => {
-    if (currentQIndex < questions.length - 1) {
-      setCurrentQIndex(prev => prev + 1);
-      setSelectedOption(null);
-      setTimeLeft(30);
-      setTimerActive(true);
-    } else {
-      // Finish quiz
+  const handleFinish = async () => {
+      const finalScore = userAnswers.filter((ans, i) => ans !== null && ans === questions[i].c).length;
       try {
         const userStr = localStorage.getItem('user');
         if (userStr) {
@@ -127,9 +112,9 @@ export default function Quiz() {
                user_id: userData.user.id,
                topic: topic,
                difficulty: difficulty,
-               score: score,
-               total_questions: 10,
-               time_taken: 300 - timeLeft // rough estimate
+               score: finalScore,
+               total_questions: questions.length,
+               time_taken: 300 // rough estimate
              }]);
           }
         }
@@ -137,9 +122,26 @@ export default function Quiz() {
         console.error("Failed to save quiz result", e);
       }
       import('../utils/activity').then(({ logSession }) => {
-        logSession(score * 5); // 5 gems per correct answer
+        logSession(finalScore * 5); // 5 gems per correct answer
       });
       setQuizFinished(true);
+  };
+
+  const handleNext = () => {
+    if (currentQIndex < questions.length - 1) {
+      setCurrentQIndex(prev => prev + 1);
+      setTimeLeft(30);
+      setTimerActive(userAnswers[currentQIndex + 1] === null);
+    } else {
+      handleFinish();
+    }
+  };
+
+  const handlePrevious = () => {
+    if (currentQIndex > 0) {
+      setCurrentQIndex(prev => prev - 1);
+      setTimeLeft(30);
+      setTimerActive(userAnswers[currentQIndex - 1] === null);
     }
   };
 
@@ -218,7 +220,8 @@ export default function Quiz() {
   const renderActiveQuiz = () => {
     const q = questions[currentQIndex];
     if (!q) return null; // Safety check
-    const showFeedback = selectedOption !== null || timeLeft === 0;
+    const currentAns = userAnswers[currentQIndex];
+    const showFeedback = currentAns !== null || (!timerActive && timeLeft === 0);
 
     return (
       <div className="glass-panel animate-fade-in" style={{ padding: '3rem', maxWidth: '800px', margin: '0 auto', position: 'relative' }}>
@@ -266,7 +269,7 @@ export default function Quiz() {
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginBottom: '2rem' }}>
           {q.a.map((opt, idx) => {
             let isCorrect = idx === q.c;
-            let isSelected = idx === selectedOption;
+            let isSelected = idx === currentAns;
             let bgColor = 'rgba(255, 255, 255, 0.05)';
             let borderColor = 'var(--border)';
 
@@ -319,57 +322,75 @@ export default function Quiz() {
           })}
         </div>
 
-        {/* Explanation & Next Button Container */}
+        {/* Explanation & Actions Container */}
         <div style={{ minHeight: '120px' }}>
-          {!showFeedback ? (
-            <div style={{ display: 'flex', justifyContent: 'flex-start', marginTop: '1rem' }}>
-              <button
-                 onClick={() => {
-                   setTimerActive(false);
-                   setStats(prev => ({ ...prev, skipped: prev.skipped + 1 }));
-                   handleNext();
-                 }}
-                 style={{ background: 'rgba(255,255,255,0.05)', padding: '10px 25px', borderRadius: '30px', color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: '8px', border: '1px solid rgba(255,255,255,0.1)', cursor: 'pointer', fontSize: '1rem' }}
-                 className="quiz-option-hover"
-              >
-                <SkipForward size={18} /> Skip Question
-              </button>
-            </div>
-          ) : (
-            <div className="animate-fade-in">
-              <div style={{ 
-                padding: '1.5rem', 
-                background: 'rgba(168, 85, 247, 0.1)', 
-                borderLeft: '4px solid #a855f7',
-                borderRadius: '8px',
-                marginBottom: '1.5rem',
-                display: 'flex',
-                gap: '15px'
-              }}>
-                <BookOpen color="#a855f7" size={24} style={{ flexShrink: 0 }} />
-                <div>
-                  <h4 style={{ margin: '0 0 5px 0', color: '#fff' }}>Explanation</h4>
-                  <p style={{ margin: 0, color: 'var(--text-muted)', lineHeight: '1.5' }}>{q.exp}</p>
-                </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginTop: '1rem', flexDirection: windowDimension.width < 768 ? 'column' : 'row', gap: '20px' }}>
+              <div style={{ display: 'flex', gap: '10px', flexDirection: 'column' }}>
+                <button
+                   onClick={handlePrevious}
+                   disabled={currentQIndex === 0}
+                   style={{ background: 'rgba(255,255,255,0.05)', padding: '10px 20px', borderRadius: '30px', color: currentQIndex === 0 ? 'rgba(255,255,255,0.2)' : 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: '8px', border: '1px solid rgba(255,255,255,0.1)', cursor: currentQIndex === 0 ? 'not-allowed' : 'pointer', fontSize: '1rem', width: 'fit-content' }}
+                   className={currentQIndex > 0 ? "quiz-option-hover" : ""}
+                >
+                  <ArrowLeft size={18} /> Prev
+                </button>
+                
+                {!showFeedback && (
+                  <button
+                     onClick={() => {
+                       setTimerActive(false);
+                       handleNext();
+                     }}
+                     style={{ background: 'rgba(255,255,255,0.05)', padding: '10px 20px', borderRadius: '30px', color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: '8px', border: '1px solid rgba(255,255,255,0.1)', cursor: 'pointer', fontSize: '1rem', width: 'fit-content' }}
+                     className="quiz-option-hover"
+                  >
+                    <SkipForward size={18} /> Skip
+                  </button>
+                )}
               </div>
-              <button 
-                onClick={handleNext}
-                className="btn-primary hover-glow"
-                style={{ width: '100%', padding: '15px', fontSize: '1.1rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}
-              >
-                {currentQIndex < questions.length - 1 ? 'Next Question' : 'View Results'}
-                <ArrowRight size={20} />
-              </button>
+
+              <div style={{ flex: 1, width: '100%' }}>
+                {showFeedback && (
+                  <div className="animate-fade-in">
+                    <div style={{ 
+                      padding: '1.5rem', 
+                      background: 'rgba(168, 85, 247, 0.1)', 
+                      borderLeft: '4px solid #a855f7',
+                      borderRadius: '8px',
+                      marginBottom: '1.5rem',
+                      display: 'flex',
+                      gap: '15px'
+                    }}>
+                      <BookOpen color="#a855f7" size={24} style={{ flexShrink: 0 }} />
+                      <div>
+                        <h4 style={{ margin: '0 0 5px 0', color: '#fff' }}>Explanation</h4>
+                        <p style={{ margin: 0, color: 'var(--text-muted)', lineHeight: '1.5' }}>{q.exp}</p>
+                      </div>
+                    </div>
+                    <button 
+                      onClick={handleNext}
+                      className="btn-primary hover-glow"
+                      style={{ width: '100%', padding: '15px', fontSize: '1.1rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}
+                    >
+                      {currentQIndex < questions.length - 1 ? 'Next Question' : 'View Results'}
+                      <ArrowRight size={20} />
+                    </button>
+                  </div>
+                )}
+              </div>
             </div>
-          )}
         </div>
       </div>
     );
   };
 
   const renderScorecard = () => {
-    const isHighScore = score >= 8;
-    const isLowScore = score < 5;
+    const finalCorrect = userAnswers.filter((ans, i) => ans !== null && ans === questions[i].c).length;
+    const finalWrong = userAnswers.filter((ans, i) => ans !== null && ans !== questions[i].c).length;
+    const finalSkipped = userAnswers.filter((ans) => ans === null).length;
+    const finalScore = finalCorrect;
+    const isHighScore = finalScore >= 8;
+    const isLowScore = finalScore < 5;
 
     return (
       <>
@@ -405,20 +426,20 @@ export default function Quiz() {
 
           <div style={{ background: 'rgba(0,0,0,0.2)', borderRadius: '16px', padding: '2rem', marginBottom: '2rem' }}>
             <div style={{ fontSize: '4.5rem', fontWeight: '800', lineHeight: '1', marginBottom: '1rem', background: 'linear-gradient(135deg, #fff, #a855f7)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-              {score} <span style={{ fontSize: '2rem', color: 'rgba(255,255,255,0.3)', WebkitTextFillColor: 'rgba(255,255,255,0.3)' }}>/ 10</span>
+              {finalScore} <span style={{ fontSize: '2rem', color: 'rgba(255,255,255,0.3)', WebkitTextFillColor: 'rgba(255,255,255,0.3)' }}>/ 10</span>
             </div>
             
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '1rem', marginTop: '2rem', borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '2rem' }}>
               <div>
-                <div style={{ color: '#10b981', fontSize: '1.5rem', fontWeight: '700' }}>{stats.correct}</div>
+                <div style={{ color: '#10b981', fontSize: '1.5rem', fontWeight: '700' }}>{finalCorrect}</div>
                 <div style={{ color: 'var(--text-muted)', fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '1px' }}>Correct</div>
               </div>
               <div style={{ borderLeft: '1px solid rgba(255,255,255,0.1)', borderRight: '1px solid rgba(255,255,255,0.1)' }}>
-                <div style={{ color: '#ef4444', fontSize: '1.5rem', fontWeight: '700' }}>{stats.wrong}</div>
+                <div style={{ color: '#ef4444', fontSize: '1.5rem', fontWeight: '700' }}>{finalWrong}</div>
                 <div style={{ color: 'var(--text-muted)', fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '1px' }}>Wrong</div>
               </div>
               <div>
-                <div style={{ color: '#f59e0b', fontSize: '1.5rem', fontWeight: '700' }}>{stats.skipped}</div>
+                <div style={{ color: '#f59e0b', fontSize: '1.5rem', fontWeight: '700' }}>{finalSkipped}</div>
                 <div style={{ color: 'var(--text-muted)', fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '1px' }}>Skipped</div>
               </div>
             </div>
