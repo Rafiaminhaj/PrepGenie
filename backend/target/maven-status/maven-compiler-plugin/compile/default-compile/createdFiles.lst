@@ -1,9 +1,9 @@
 backend\repository\InterviewRepository.class
 backend\entity\LearningMemory.class
+com\rafia\prepgenie\dto\CodeExecutionRequest.class
 com\rafia\prepgenie\entity\User.class
 com\rafia\prepgenie\dto\ChatRequest.class
 com\rafia\prepgenie\dto\LoginRequest.class
-backend\controller\QuizController.class
 backend\dto\QuizRequest.class
 backend\entity\Document.class
 backend\entity\InterviewSession.class
@@ -18,7 +18,9 @@ com\rafia\prepgenie\config\RestTemplateConfig.class
 com\rafia\prepgenie\dto\AuthResponse.class
 com\rafia\prepgenie\model\Flashcard.class
 backend\repository\ChatRepository.class
+com\rafia\prepgenie\service\CodeExecutionService.class
 backend\service\InterviewService.class
+com\rafia\prepgenie\controller\CodeExecutionController.class
 com\rafia\prepgenie\service\FlashcardService$1.class
 com\rafia\prepgenie\service\FlashcardService.class
 backend\entity\Role.class
@@ -33,6 +35,7 @@ backend\dto\ApiResponse.class
 com\rafia\prepgenie\controller\UserController.class
 backend\entity\Quiz.class
 backend\service\ChatService.class
+com\rafia\prepgenie\dto\CodeExecutionResponse.class
 com\rafia\prepgenie\service\AiService.class
 backend\security\UserPrincipal.class
 backend\service\MemoryService.class
@@ -42,7 +45,6 @@ com\rafia\prepgenie\model\Deck.class
 com\rafia\prepgenie\repository\UserRepository.class
 backend\service\DocumentService.class
 backend\dto\InterviewRequest.class
-backend\config\CorsConfig.class
 com\rafia\prepgenie\security\CustomUserDetailsService.class
 backend\config\SwaggerConfig.class
 com\rafia\prepgenie\dto\ChatResponse.class

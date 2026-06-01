@@ -99,6 +99,7 @@ export default function Sidebar() {
     { name: 'Analytics', path: '/analytics', icon: <LineChart size={20} /> },
     { name: 'Leaderboard', path: '/leaderboard', icon: <Trophy size={20} /> },
     { name: 'GitHub Persona', path: '/persona', icon: <GitBranch size={20} /> },
+    { name: 'Algorithm Visualizer', path: '/algorithm-visualizer', icon: <GitBranch size={20} color="#38bdf8" /> },
   ];
 
   return (

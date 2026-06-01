@@ -5,6 +5,7 @@ C:\Users\adiqu\OneDrive\Desktop\PrepGenie\backend\src\main\java\com\rafia\prepge
 C:\Users\adiqu\OneDrive\Desktop\PrepGenie\backend\src\main\java\com\rafia\prepgenie\config\SwaggerConfig.java
 C:\Users\adiqu\OneDrive\Desktop\PrepGenie\backend\src\main\java\com\rafia\prepgenie\controller\AuthController.java
 C:\Users\adiqu\OneDrive\Desktop\PrepGenie\backend\src\main\java\com\rafia\prepgenie\controller\ChatController.java
+C:\Users\adiqu\OneDrive\Desktop\PrepGenie\backend\src\main\java\com\rafia\prepgenie\controller\CodeExecutionController.java
 C:\Users\adiqu\OneDrive\Desktop\PrepGenie\backend\src\main\java\com\rafia\prepgenie\controller\DocumentController.java
 C:\Users\adiqu\OneDrive\Desktop\PrepGenie\backend\src\main\java\com\rafia\prepgenie\controller\FlashcardController.java
 C:\Users\adiqu\OneDrive\Desktop\PrepGenie\backend\src\main\java\com\rafia\prepgenie\controller\InterviewController.java
@@ -17,6 +18,8 @@ C:\Users\adiqu\OneDrive\Desktop\PrepGenie\backend\src\main\java\com\rafia\prepge
 C:\Users\adiqu\OneDrive\Desktop\PrepGenie\backend\src\main\java\com\rafia\prepgenie\dto\AuthResponse.java
 C:\Users\adiqu\OneDrive\Desktop\PrepGenie\backend\src\main\java\com\rafia\prepgenie\dto\ChatRequest.java
 C:\Users\adiqu\OneDrive\Desktop\PrepGenie\backend\src\main\java\com\rafia\prepgenie\dto\ChatResponse.java
+C:\Users\adiqu\OneDrive\Desktop\PrepGenie\backend\src\main\java\com\rafia\prepgenie\dto\CodeExecutionRequest.java
+C:\Users\adiqu\OneDrive\Desktop\PrepGenie\backend\src\main\java\com\rafia\prepgenie\dto\CodeExecutionResponse.java
 C:\Users\adiqu\OneDrive\Desktop\PrepGenie\backend\src\main\java\com\rafia\prepgenie\dto\InterviewRequest.java
 C:\Users\adiqu\OneDrive\Desktop\PrepGenie\backend\src\main\java\com\rafia\prepgenie\dto\LoginRequest.java
 C:\Users\adiqu\OneDrive\Desktop\PrepGenie\backend\src\main\java\com\rafia\prepgenie\dto\QuizRequest.java
@@ -48,6 +51,7 @@ C:\Users\adiqu\OneDrive\Desktop\PrepGenie\backend\src\main\java\com\rafia\prepge
 C:\Users\adiqu\OneDrive\Desktop\PrepGenie\backend\src\main\java\com\rafia\prepgenie\service\AiService.java
 C:\Users\adiqu\OneDrive\Desktop\PrepGenie\backend\src\main\java\com\rafia\prepgenie\service\AuthService.java
 C:\Users\adiqu\OneDrive\Desktop\PrepGenie\backend\src\main\java\com\rafia\prepgenie\service\ChatService.java
+C:\Users\adiqu\OneDrive\Desktop\PrepGenie\backend\src\main\java\com\rafia\prepgenie\service\CodeExecutionService.java
 C:\Users\adiqu\OneDrive\Desktop\PrepGenie\backend\src\main\java\com\rafia\prepgenie\service\DocumentService.java
 C:\Users\adiqu\OneDrive\Desktop\PrepGenie\backend\src\main\java\com\rafia\prepgenie\service\FlashcardService.java
 C:\Users\adiqu\OneDrive\Desktop\PrepGenie\backend\src\main\java\com\rafia\prepgenie\service\InterviewService.java

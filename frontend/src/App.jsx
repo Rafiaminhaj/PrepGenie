@@ -32,6 +32,7 @@ import SmartNotebook from './pages/SmartNotebook';
 import CodingPlayground from './pages/CodingPlayground';
 import DsaRoadmap from './pages/DsaRoadmap';
 import JobTracker from './pages/JobTracker';
+import AlgorithmVisualizer from './pages/AlgorithmVisualizer';
 
 function App() {
   useEffect(() => {
@@ -150,6 +151,7 @@ function App() {
         <Route path="/coding-playground" element={<CodingPlayground />} />
         <Route path="/roadmap" element={<DsaRoadmap />} />
         <Route path="/job-tracker" element={<JobTracker />} />
+        <Route path="/algorithm-visualizer" element={<AlgorithmVisualizer />} />
       </Routes>
     </BrowserRouter>
   );

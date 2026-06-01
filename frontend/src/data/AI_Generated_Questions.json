@@ -1,0 +1,42 @@
+[
+  {
+    "timestamp": "2026-06-01T12:33:47.446Z",
+    "category": "JavaScript",
+    "difficulty": "Easy",
+    "questions": [
+      {
+        "q": "What is the primary purpose of `console.log()` in JavaScript?",
+        "a": [
+          "To display pop-up alerts to the user.",
+          "To write messages or variable values to the browser's console for debugging.",
+          "To modify the styling of HTML elements.",
+          "To define a new variable in the script."
+        ],
+        "c": 1,
+        "exp": "`console.log()` is a fundamental function in JavaScript used by developers to output information, variable values, or debug messages to the browser's developer console (or Node.js terminal). This helps in understanding the program's flow, state, and identifying issues."
+      },
+      {
+        "q": "Which of the following JavaScript keywords is used to declare a variable whose value can be reassigned?",
+        "a": [
+          "`const`",
+          "`let`",
+          "`final`",
+          "`fixed`"
+        ],
+        "c": 1,
+        "exp": "The `let` keyword declares a block-scoped local variable, and its value can be reassigned later in the code. `const` is used for variables whose value cannot be reassigned after initial assignment. `final` and `fixed` are not standard JavaScript keywords for variable declaration."
+      },
+      {
+        "q": "What will be the output of the following JavaScript expression: `2 + '2'`?",
+        "a": [
+          "4",
+          "'22'",
+          "NaN",
+          "TypeError"
+        ],
+        "c": 1,
+        "exp": "In JavaScript, when the `+` operator is used with a number and a string, the number is coerced into a string, and then the two strings are concatenated. Therefore, `2` becomes `'2'`, and `'2' + '2'` results in the string `'22'`."
+      }
+    ]
+  }
+]
