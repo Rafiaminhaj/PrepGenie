@@ -33,6 +33,7 @@ import CodingPlayground from './pages/CodingPlayground';
 import DsaRoadmap from './pages/DsaRoadmap';
 import JobTracker from './pages/JobTracker';
 import AlgorithmVisualizer from './pages/AlgorithmVisualizer';
+import MockInterview from './pages/MockInterview';
 
 function App() {
   useEffect(() => {
@@ -129,7 +130,7 @@ function App() {
         <Route path="/auth" element={<Auth />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/quiz" element={<Quiz />} />
-        <Route path="/interview" element={<Interview />} />
+        <Route path="/interview" element={<MockInterview />} />
         <Route path="/chat" element={<Chat />} />
         <Route path="/visual" element={<VisualLearning />} />
         <Route path="/notebook" element={<Notebook />} />
