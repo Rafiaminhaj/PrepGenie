@@ -3,14 +3,68 @@ import { v4 as uuidv4 } from 'uuid';
 import { API_BASE_URL } from '../lib/api';
 import Navbar from '../components/Navbar';
 import { motion } from 'framer-motion';
-import { FaUserCircle, FaRobot, FaPaperPlane } from 'react-icons/fa';
+import { FaUserCircle, FaRobot, FaPaperPlane, FaMicrophone, FaMicrophoneSlash } from 'react-icons/fa';
 
 const MockInterview = () => {
   const [sessionId, setSessionId] = useState('');
   const [messages, setMessages] = useState([]);
   const [inputMessage, setInputMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [isListening, setIsListening] = useState(false);
   const chatEndRef = useRef(null);
+  const recognitionRef = useRef(null);
+
+  useEffect(() => {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (SpeechRecognition) {
+      recognitionRef.current = new SpeechRecognition();
+      recognitionRef.current.continuous = true;
+      recognitionRef.current.interimResults = true;
+      
+      recognitionRef.current.onresult = (event) => {
+        for (let i = event.resultIndex; i < event.results.length; i++) {
+          const transcript = event.results[i][0].transcript;
+          if (event.results[i].isFinal) {
+            setInputMessage(prev => prev + transcript + ' ');
+          }
+        }
+      };
+
+      recognitionRef.current.onerror = (event) => {
+        console.error('Speech recognition error', event.error);
+        setIsListening(false);
+      };
+
+      recognitionRef.current.onend = () => {
+        setIsListening(false);
+      };
+    }
+    
+    return () => {
+      if (recognitionRef.current) {
+        recognitionRef.current.stop();
+      }
+    };
+  }, []);
+
+  const toggleListening = (e) => {
+    e.preventDefault();
+    if (isListening) {
+      recognitionRef.current?.stop();
+      setIsListening(false);
+    } else {
+      if (recognitionRef.current) {
+        try {
+          recognitionRef.current.start();
+          setIsListening(true);
+        } catch (e) {
+          console.error(e);
+        }
+      } else {
+        alert("Your browser does not support Speech Recognition.");
+      }
+    }
+  };
 
   useEffect(() => {
     // Generate a unique session ID for the interview
@@ -134,6 +188,14 @@ const MockInterview = () => {
                 disabled={isLoading}
                 className="flex-1 bg-[#1a1d27] text-white px-5 py-3 rounded-full border border-gray-700 focus:outline-none focus:border-cyan-500/50 transition-colors"
               />
+              <button 
+                type="button"
+                onClick={toggleListening}
+                className={`w-12 h-12 rounded-full flex items-center justify-center text-white transition-colors ${isListening ? 'bg-red-500 animate-pulse' : 'bg-gray-700 hover:bg-gray-600'}`}
+                title={isListening ? "Stop Listening" : "Start Speaking"}
+              >
+                {isListening ? <FaMicrophoneSlash size={20} /> : <FaMicrophone size={20} />}
+              </button>
               <button 
                 type="submit"
                 disabled={isLoading || !inputMessage.trim()}
