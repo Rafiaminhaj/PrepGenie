@@ -281,7 +281,7 @@ export default function CodingPlayground() {
     } else {
       // Backend Execution
       try {
-        const response = await fetch((import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api') + '/execute', {
+        const response = await fetch((import.meta.env.VITE_API_BASE_URL || (import.meta.env.DEV ? 'http://localhost:8080/api' : 'https://prepgenie-backend-1f007ea8-0dd1-406c-be83-a06b9d08c239.fly.dev/api')) + '/execute', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ language: language, code: code })
@@ -404,7 +404,7 @@ export default function CodingPlayground() {
       javaCode += '  }\n}';
 
       try {
-        const response = await fetch((import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api') + '/execute', {
+        const response = await fetch((import.meta.env.VITE_API_BASE_URL || (import.meta.env.DEV ? 'http://localhost:8080/api' : 'https://prepgenie-backend-1f007ea8-0dd1-406c-be83-a06b9d08c239.fly.dev/api')) + '/execute', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ language: 'java', code: javaCode })
